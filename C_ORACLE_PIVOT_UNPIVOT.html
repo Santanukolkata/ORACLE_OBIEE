@@ -1,0 +1,67 @@
+<html>
+<head>
+<style>
+div.Codeing {
+  width:800px;
+  background-color:#B9B1AF;
+  border: 2px solid black;
+}
+</style>
+</head>
+<body>
+<p> Assume we have data in table like below</p> 
+<img src="../image/C_ORACLE_PIVOT_UNPIVOT_001.PNG" alt="column_property" style="width:400px;height:150px;" border="2px solid black">
+<br>
+<p> And we have to make like this in oracle </p> 
+<img src="../image/C_ORACLE_PIVOT_UNPIVOT_002.PNG" alt="column_property1" style="width:600px;height:150px;" border="2px solid black">
+<br>
+<p> Now In Oracle 12C we have can use pivot and unpivot</p> 
+<div  class ="Codeing">
+ 
+<br>	   
+<br>	   
+<br>CREATE TABLE DEV_ODW.EMP_COUNT_MONTH_WISE
+<br>(
+<br> &nbsp G_MONTH_NAME  VARCHAR2(15 BYTE),
+<br> &nbsp MALE          NUMBER,
+<br> &nbsp FEMALE        NUMBER
+<br>)
+<br>TABLESPACE USER_TABLESPACE
+<br>
+<br>
+<br>SET DEFINE OFF;
+<br>Insert into EMP_COUNT_MONTH_WISE(G_MONTH_NAME, MALE, FEMALE)
+<br> Values('March', 418, 184);
+<br>Insert into EMP_COUNT_MONTH_WISE(G_MONTH_NAME, MALE, FEMALE)
+<br> Values('February', 1019, 416);
+<br>Insert into EMP_COUNT_MONTH_WISE(G_MONTH_NAME, MALE, FEMALE)
+<br> Values('January', 670, 246);
+<br>Insert into EMP_COUNT_MONTH_WISE(G_MONTH_NAME, MALE, FEMALE)
+<br> Values('November', 1158, 375);
+<br>Insert into EMP_COUNT_MONTH_WISE(G_MONTH_NAME, MALE, FEMALE)
+<br> Values('October', 551, 181);
+<br>Insert into EMP_COUNT_MONTH_WISE(G_MONTH_NAME, MALE, FEMALE)
+<br> Values('September', 1485, 466);
+<br>COMMIT;
+<br>
+<br>Step 1:
+<br>select * from 
+<br>(select G_MONTH_NAME,
+<br>&nbsp        MALE,
+<br>&nbsp      FEMALE
+<br>        from EMP_COUNT_MONTH_WISE
+<br>      )
+<br>UNPIVOT (CNT FOR GENDER IN (MALE,FEMALE));
+<br>
+<br>Final Step:
+<br>
+<br>select * from 
+<br>(select G_MONTH_NAME,
+<br>&nbsp        MALE,
+<br>&nbsp       FEMALE
+<br>        from EMP_COUNT_MONTH_WISE)
+<br>UNPIVOT (CNT FOR GENDER IN (MALE,FEMALE))
+<br>PIVOT (SUM(CNT)  FOR (G_MONTH_NAME) IN('March' AS "MAR",'February' AS "FEB",'January' AS "JAN",'November' AS "NOV",'October' AS "OCT",'September' AS "SEP"));
+</div>
+</body>
+</html>

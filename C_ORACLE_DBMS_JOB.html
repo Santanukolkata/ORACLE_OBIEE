@@ -1,0 +1,78 @@
+<html>
+<head>
+<style>
+div.Codeing {
+  width:1000px;
+  background-color:#B9B1AF;
+  border: 2px solid black;
+}
+P.Commentd
+{
+color:green;
+font-weight: bold;
+
+}
+
+</style>
+</head>
+<body>
+<strong>DBMS_JOB running In oracle :</strong>
+<br>
+<div  class ="Codeing"> 
+------------------------------------------------------------------<br>
+grant execute on dbms_job to dev_odw;<br>
+------------------------------------------------------------------<br>
+create table t_temp(ent_date date);<br>
+------------------------------------------------------------------<br>
+<p class="Commentd"> One time JOB: </p>
+<pre>
+DECLARE
+vjobnumber BINARY_INTEGER;
+BEGIN
+  DBMS_job.submit(
+   job => vjobnumber,
+   next_date => sysdate+1/86400,
+   INTERVAL => 'null',
+   what => 'begin insert into t_temp select sysdate from dual;end;');
+COMMIT;
+END;
+</pre>
+------------------------------------------------------------------<br>
+<p class="Commentd"> job runs at fixed time: </p>
+<pre>
+DECLARE
+vjobnumber BINARY_INTEGER;
+BEGIN
+DBMS_job.submit(job => vjobnumber,
+next_date => next_date => trunc(sysdate,'HH24') +(15*(floor(to_number(to_char(SYSDATE,'MI'))/15)+1)/1440),
+INTERVAL => 'trunc(sysdate,''HH24'') +(15*(floor(to_number(to_char(SYSDATE,''MI''))/15)+1)/1440)',
+what => 'begin insert into t_temp select sysdate from dual;end;');
+COMMIT;
+END;
+</pre>
+------------------------------------------------------------------<br>
+<p class="Commentd"> Checking jobs: </p>
+<pre>
+SELECT *
+FROM sys.user_jobs t
+WHERE t.WHAT = 'begin insert into t_temp select sysdate from dual;end;';
+</pre>
+------------------------------------------------------------------<br>
+<p class="Commentd"> Removing Jobs :</p>
+<pre>
+DECLARE
+vjobnumber BINARY_INTEGER;
+BEGIN
+SELECT t.JOB
+INTO vjobnumber
+FROM sys.user_jobs t
+WHERE t.WHAT = 'begin insert into t_temp select sysdate from dual;end;';
+dbms_job.remove(vjobnumber);
+COMMIT;
+END;
+</pre>
+------------------------------------------------------------------<br>
+</div>
+</div>
+</body>
+</html>

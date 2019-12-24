@@ -1,0 +1,123 @@
+<html>
+<head>
+<style>
+div.Codeing {
+  width:800px;
+  background-color:#B9B1AF;
+  border: 2px solid black;
+}
+P.Commentd
+{
+color:green;
+font-size: 120%;
+}
+
+</style>
+</head>
+<body>
+
+<p> The Codes are tested in Oracle 12C</p> 
+<div  class ="Codeing"> 
+<BR><p class="Commentd">--Range Partion:</p>
+<BR><p class="Commentd">----- Dropping Tables </p>
+<BR>DROP TABLE ST_PARTITION_EXAMPLE purge ;
+<BR><p class="Commentd">-- Creating a normal partition table  </p>
+<BR>CREATE TABLE ST_PARTITION_EXAMPLE
+<BR>(
+<BR>   DATA_DATE                   DATE,
+<BR>   ROW_ID                      VARCHAR2 (50),
+<BR>   CLOSED_DATE                 DATE,
+<BR>   LAST_UPDATED_DATE           DATE
+<BR>)
+<BR>TABLESPACE "USER_TABLESPACE"
+<BR>PARTITION BY RANGE (closed_date)
+<BR> (  
+<BR>PARTITION JULY2017 VALUES LESS THAN (TO_DATE(' 2017-07-01 00:00:00', 'SYYYY-MM-DD HH24:MI:SS', 'NLS_CALENDAR=GREGORIAN')) TABLESPACE USER_TABLESPACE 
+<BR> )
+<BR>ENABLE ROW MOVEMENT;
+<BR>
+<BR><p class="Commentd">--Adding Partition:</p>
+<BR>ALTER TABLE ST_PARTITION_EXAMPLE ADD PARTITION AUG2017 VALUES LESS THAN
+<BR>(TO_DATE('2017-08-01 00:00:00', 'SYYYY-MM-DD HH24:MI:SS', 'NLS_CALENDAR=GREGORIAN'))
+<BR>
+<BR><p class="Commentd">--Checking partition:</p>
+<BR>select * from user_tab_partitions WHERE TABLE_NAME ='ST_PARTITION_EXAMPLE';
+<BR>
+<BR><p class="Commentd">---Deleting Partition:</p>
+<BR>alter table ST_PARTITION_EXAMPLE drop partition AUG2017;
+<BR>---------------------------------------------------------------------------------------------------------------------
+<BR><p class="Commentd">--Dropping  Partition:</p>
+<BR>
+<BR>DROP TABLE ST_PARTITION_EXAMPLE purge ;</p>
+<BR><p class="Commentd">-- Creating a normal partition table</p>  
+<BR>CREATE TABLE ST_PARTITION_EXAMPLE
+<BR>(
+<BR>   DATA_DATE                   DATE,
+<BR>   ROW_ID                      VARCHAR2 (50),
+<BR>   CLOSED_DATE                 DATE,
+<BR>   LAST_UPDATED_DATE           DATE
+<BR>)
+<BR>TABLESPACE "USER_TABLESPACE"
+<BR>PARTITION BY RANGE (closed_date)
+<BR> (  
+<BR>
+<BR>PARTITION JULY2017 VALUES LESS THAN (TO_DATE('2017-08-01 00:00:00', 'SYYYY-MM-DD HH24:MI:SS', 'NLS_CALENDAR=GREGORIAN')) TABLESPACE USER_TABLESPACE ,  
+<BR>PARTITION MAXVALUE  VALUES LESS THAN (MAXVALUE) TABLESPACE "USER_TABLESPACE"
+<BR> )
+<BR>ENABLE ROW MOVEMENT;
+<BR>
+<BR><p class="Commentd">---Checking partition:</p>
+<BR>select * from user_tab_partitions WHERE TABLE_NAME ='ST_PARTITION_EXAMPLE';
+<BR>
+<BR><p class="Commentd">--Splitting partition</p>
+<BR>ALTER TABLE ST_PARTITION_EXAMPLE SPLIT PARTITION MAXVALUE AT (TO_DATE('01-SEP-2017 00:00:00', 'DD-MON-YYYY HH24:MI:SS'))
+<BR>INTO (PARTITION AUG2017,PARTITION MAXVALUE) UPDATE GLOBAL INDEXES;
+<BR>
+<BR>---------------------------------------------------------------------------------------------------------------------
+<BR>
+<BR><p class="Commentd">--Merge Partition:</p>
+<BR>
+<BR>alter table ST_PARTITION_EXAMPLE MERGE PARTITIONS JULY2017,AUG2017 INTO PARTITION MAXVALUE_M UPDATE INDEXES;
+<BR>
+<BR>---------------------------------------------------------------------------------------------------------------------
+<BR><p class="Commentd">--Sub Partition</p>
+<BR>DROP TABLE ST_PARTITION_EXAMPLE PURGE;
+<BR>/
+<BR>CREATE TABLE ST_PARTITION_EXAMPLE
+<BR>(
+<BR>   DATA_DATE     DATE,
+<BR>   AGENT_NO     VARCHAR2 (50),
+<BR>   RECORD_TYPE   VARCHAR2 (1)
+<BR>)
+<BR>TABLESPACE "USER_TABLESPACE"
+<BR>PARTITION BY RANGE (data_date)
+<BR>   SUBPARTITION BY LIST
+<BR>      (RECORD_TYPE)
+<BR>      SUBPARTITION TEMPLATE (
+<BR>         SUBPARTITION CALLRECORDS VALUES ('C'),
+<BR>         SUBPARTITION AGENTRECORDS VALUES ('A'))
+<BR>   (PARTITION MAY012015
+<BR>       VALUES LESS THAN
+<BR>          (TO_DATE (' 2015-05-01 00:00:00','SYYYY-MM-DD HH24:MI:SS','NLS_CALENDAR=GREGORIAN'))
+<BR>       TABLESPACE USER_TABLESPACE
+<BR>       (
+<BR>          SUBPARTITION MAY012015_CALLRECORDS
+<BR>             VALUES ('C')
+<BR>             TABLESPACE USER_TABLESPACE,
+<BR>          SUBPARTITION MAY012015_AGENTRECORDS
+<BR>             VALUES ('A')
+<BR>             TABLESPACE USER_TABLESPACE),
+<BR>    PARTITION MAY022015
+<BR>       VALUES LESS THAN
+<BR>          (TO_DATE (' 2015-05-02 00:00:00','SYYYY-MM-DD HH24:MI:SS','NLS_CALENDAR=GREGORIAN'))
+<BR>       TABLESPACE USER_TABLESPACE
+<BR>       (
+<BR>          SUBPARTITION MAY022015_CALLRECORDS
+<BR>             VALUES ('C')
+<BR>             TABLESPACE USER_TABLESPACE,
+<BR>          SUBPARTITION MAY022015_AGENTRECORDS
+<BR>             VALUES ('A')
+<BR>             TABLESPACE USER_TABLESPACE))
+</div>
+</body>
+</html>

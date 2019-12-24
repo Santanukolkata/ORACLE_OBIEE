@@ -1,0 +1,94 @@
+<html>
+<head>
+<style>
+div.Codeing {
+  width:800px;
+  background-color:#B9B1AF;
+  border: 2px solid black;
+}
+</style>
+</head>
+<body>
+
+<p> Schema User Must have Create type and Create procedure grants</p> 
+<div  class ="Codeing">
+
+
+<br>Drop Table DIRECT_DB_REQUEST purge;
+<br>/
+<br>Create table DIRECT_DB_REQUEST
+<br>&nbsp;(S_EIN       VARCHAR2(1000),
+<br>&nbsp;S_NAME      VARCHAR2(1000),
+<br>&nbsp;S_JOIN_DATE  DATE
+<br>&nbsp;);
+<br>Drop TYPE VAR_TYPE_DIRECT_REQUEST;
+<br>/
+<br>Drop type TYPE_DIRECT_REQUEST;
+<br>/
+<br>CREATE OR REPLACE TYPE TYPE_DIRECT_REQUEST
+<br>   AS OBJECT &nbsp;(S_EIN       VARCHAR2(1000),
+<br>            &nbsp; S_NAME      VARCHAR2(1000),
+<br>			&nbsp; S_JOIN_DATE  DATE
+<br>              );
+<br>/
+<br>CREATE OR REPLACE TYPE VAR_TYPE_DIRECT_REQUEST
+<br>   IS TABLE OF TYPE_DIRECT_REQUEST;
+<br>/ 
+<br>CREATE OR REPLACE FUNCTION FUNC_TYPE_DIRECT_REQUEST(IN_S_EIN VARCHAR2
+<br>   )
+<br>   RETURN VAR_TYPE_DIRECT_REQUEST
+<br>   PIPELINED
+<br>AS
+<br>   TYPE t_tab IS TABLE OF VARCHAR2(1000);
+<br>   TYPE l_TYPE_DIRECT_REQUEST IS RECORD
+<br>   (
+<br>   &nbsp;&nbsp;  S_EIN VARCHAR2(1000),
+<br>  &nbsp; &nbsp;  S_NAME VARCHAR2(1000),
+<br>  &nbsp;&nbsp;    S_JOIN_DATE  DATE
+<br>    );
+<br>
+<br>   TYPE T_TYPE_DIRECT_REQUEST IS TABLE OF L_TYPE_DIRECT_REQUEST;
+<br>
+<br>   C_INV_REP_TYPE    T_TYPE_DIRECT_REQUEST;
+<br>   PRAGMA AUTONOMOUS_TRANSACTION;
+<br>   sql_code           VARCHAR2(1000);
+<br>   sql_errm           VARCHAR2(1000);  
+<br> 
+<br>BEGIN 
+<br>
+<br>     SELECT S_EIN,S_NAME,S_JOIN_DATE
+<br>       BULK COLLECT INTO C_inv_rep_type
+<br>       from DIRECT_DB_REQUEST where S_EIN like '%'||IN_S_EIN||'%' ;
+<br>
+<br>   FOR j IN 1 .. C_inv_rep_type.COUNT
+<br>   LOOP
+<br>       PIPE ROW (TYPE_DIRECT_REQUEST(
+<br>                                     &nbsp;C_inv_rep_type(j).S_EIN,
+<br>                                     &nbsp;   C_inv_rep_type(j).S_NAME,
+<br>                                     &nbsp;    C_inv_rep_type(j).S_JOIN_DATE                                               
+<br>                                               ));
+<br>      NULL;
+<br>   END LOOP;
+<br>EXCEPTION
+<br>  &nbsp; WHEN OTHERS
+<br>   THEN
+<br>  &nbsp; sql_code :=sqlcode;
+<br> &nbsp;  sql_errm :=sqlerrm;
+<br>      SELECT 0, 0, SYSDATE
+<br>        BULK COLLECT INTO C_inv_rep_type
+<br>        FROM DUAL;
+<br>
+<br>      FOR j IN 1 .. C_inv_rep_type.COUNT
+<br>      LOOP
+<br>         PIPE ROW (TYPE_DIRECT_REQUEST(C_inv_rep_type(j).S_EIN,
+<br>   &nbsp; &nbsp;                       C_inv_rep_type(j).S_NAME,
+<br>   &nbsp; &nbsp;                       C_inv_rep_type(j).S_JOIN_DATE                                               
+<br>   &nbsp; &nbsp;                                           ));
+<br>         NULL;
+<br>      END LOOP;
+<br>END;
+<br>/
+</div>
+
+</body>
+</html>

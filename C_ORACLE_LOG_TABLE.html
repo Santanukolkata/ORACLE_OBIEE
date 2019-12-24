@@ -1,0 +1,76 @@
+<html>
+<head>
+<style>
+div.Codeing {
+  width:1000px;
+  background-color:#B9B1AF;
+  border: 2px solid black;
+}
+P.Commentd
+{
+color:green;
+font-weight: bold;
+}
+
+</style>
+</head>
+<body>
+
+<p>Table script</p> 
+<div  class ="Codeing"> 
+create table T_LOG_HISTORY
+(
+  LOGID     VARCHAR2(50),<br>
+  MODULEID  VARCHAR2(20),<br>
+  OPRTYPE   VARCHAR2(30),<br>
+  LOGTIME   DATE,<br>
+  OPRTYME   NUMBER,<br>
+  STAFFID   VARCHAR2(64),<br>
+  STAFFNAME VARCHAR2(50),<br>
+  OPERIP    VARCHAR2(15),<br>
+  LOGDESC   VARCHAR2(300),<br>
+  ISSUCCESS NUMBER(1)
+)
+<br>
+partition by range (LOGTIME)
+<br>(<br>
+  partition JAN2012 values less than (TO_DATE(' 2012-01-02 00:00:00', 'SYYYY-MM-DD HH24:MI:SS', 'NLS_CALENDAR=GREGORIAN'))
+  <br>&nbsp;&nbsp;&nbsp;  tablespace USER_TABLESPACE
+,<br>
+  partition FEB2012 values less than (TO_DATE(' 2012-01-03 00:00:00', 'SYYYY-MM-DD HH24:MI:SS', 'NLS_CALENDAR=GREGORIAN'))
+  <br>&nbsp;&nbsp;&nbsp;  tablespace USER_TABLESPACE
+,<br>
+  partition MAR2012 values less than (TO_DATE(' 2012-01-04 00:00:00', 'SYYYY-MM-DD HH24:MI:SS', 'NLS_CALENDAR=GREGORIAN'))
+  <br>&nbsp;&nbsp;  tablespace USER_TABLESPACE
+,<br>
+  partition APR2012 values less than (TO_DATE(' 2012-01-05 00:00:00', 'SYYYY-MM-DD HH24:MI:SS', 'NLS_CALENDAR=GREGORIAN'))
+  <br>&nbsp;&nbsp;  tablespace USER_TABLESPACE
+,<br>
+  partition REST values less than (MAXVALUE)
+   <br>&nbsp;&nbsp; tablespace USER_TABLESPACE
+<br>);
+<p class="Commentd">-- Add comments to the columns </p>
+comment on column T_LOG_HISTORY.LOGID
+  is 'unique id for every log';<br>
+comment on column T_LOG_HISTORY.MODULEID
+  is 'the log belong to which module say it data oriented or functional oriented';<br>
+comment on column T_LOG_HISTORY.OPRTYPE
+  is 'Add,delete,or modify which type of operation';<br>
+comment on column T_LOG_HISTORY.LOGTIME
+  is 'system time of a particular event';<br>
+comment on column T_LOG_HISTORY.OPRTYME
+  is 'the number taken to do the event';<br>
+comment on column T_LOG_HISTORY.STAFFID
+  is 'the id of the staff';<br>
+comment on column T_LOG_HISTORY.STAFFNAME
+  is 'the name of the staff';<br>
+comment on column T_LOG_HISTORY.OPERIP
+  is 'the ip of the client of the client machine';<br>
+comment on column T_LOG_HISTORY.LOGDESC
+  is 'the total activity description';<br>
+comment on column T_LOG_HISTORY.ISSUCCESS
+  is 'boolean shows true or false whether its success or  not';<br>
+
+</div>
+</body>
+</html>
