@@ -1,0 +1,65 @@
+
+Step 1:-
+Log in as root, respectively, performed on each node in the RAC Creating an operating system group called dba 1:- Find any existing Group named dba
+# grep dba /etc/group
+Step 2:-
+Deletion of existing group:- No output indicates that dba group does not exist. If the dba group exists, use the following command to remove the dba group.
+## groupdel dba
+Step 3:-
+Now to add the dba group
+# groupadd -g 200 dba
+Step 4:-
+Creating an operating system group named oinstall Log in as root, respectively, performed on each node in the RAC.
+# grep oinstall /etc/group
+Step 5:-
+No output indicates that the oinstall group does not exist. If the oinstall group exists, use the following command to remove the oinstall group.
+# groupdel oinstall
+Step 6:-
+Now creating the oinstall group
+# groupadd -g 201 oinstall
+step 7:-
+Creating the oracle operating system user name Log in as root, respectively, performed on each node in the RAC.
+# grep oracle /etc/passwd
+step 8:-
+No output indicates that Oracle user does not exist. If the Oracle user already exists, use the following command to remove the Oracle user.
+# userdel -rf oracle
+step 9:-
+Now creating oracle user and assigning it to dba group
+# useradd -u 300 -g oinstall -G dba -d /home/oracle -s /bin/bash -m oracle
+step 10:-
+Create a password for the oracle user
+Log in as root user, perform the same operation on each node in the RAC.
+# passwd oracle
+Changing password for oracle.
+New Password:
+Reenter New Password:
+Password changed.
+step 11:-
+Gives the correct directory permissions Log in as root, perform the same function on each node in the RAC
+# chown -R oracle:dba /opt/oracle
+# chmod -R 770 /opt/oracle
+# chown -R oracle:dba /opt/oracrs
+# chmod -R 770 /opt/oracrs
+# chown -R oracle:dba /opt/orabak
+# chmod -R 770 /opt/orabak
+step 12:-
+Set the oracle user environment variables C performed on each node Syntax Login as oracle user, edit on each server /home/oracle/.profile file, add the following content to set the environment variable?
+# Oracle Environment
+export ORACLE_BASE=/opt/oracle
+export ORACLE_HOME=$ORACLE_BASE/product/11g/db
+export ORA_CRS_HOME=/opt/oracrs
+export ORACLE_SID=instance_name
+---- Please modify the instance name under field conditions
+export ORACLE_TERM=xterm
+LD_LIBRARY_PATH=$ORACLE_HOME/lib:/lib:/usr/lib:$ORACLE_HOME/rdbms/lib
+export LD_LIBRARY_PATH
+SHLIB_PATH=$ORACLE_HOME/lib32:$ORACLE_HOME/rdbms/lib32
+export SHLIB_PATH
+# Set shell search paths:
+export PATH=$ORACLE_HOME/bin:$ORACLE_HOME/OPatch:/usr/sbin:$PATH:/usr/local/bin:$ORA_CRS_HOME/bin
+# CLASSPATH must include the following JRE locations:
+CLASSPATH=$ORACLE_HOME/JRE:$ORACLE_HOME/jlib:$ORACLE_HOME/rdbms/jlib
+export CLASSPATH=$CLASSPATH:$ORACLE_HOME/network/jlib
+export NLS_LANG=AMERICAN_AMERICA.UTF8 step 13:-
+Run the below command for setting this environment ?
+$ source .profile

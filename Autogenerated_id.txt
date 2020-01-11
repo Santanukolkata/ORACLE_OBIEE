@@ -1,0 +1,23 @@
+------------------------------------------------------------------
+grant create trigger to dev_odw;
+------------------------------------------------------------------
+create table t_test_generated_id
+(
+id number constraint pk primary key,
+name varchar2(255) not null
+
+);
+------------------------------------------------------------------
+create sequence seq_generated_id start with 1;
+------------------------------------------------------------------
+create or replace trigger tr_generated_ids
+before insert on t_test_generated_id
+for each row
+begin
+select seq_generated_id.nextval into :new.id from dual;
+end;
+------------------------------------------------------------------
+insert into t_test_generated_id (name) values ('generates id');
+------------------------------------------------------------------
+select * from t_test_generated_id;
+------------------------------------------------------------------

@@ -1,0 +1,30 @@
+--check undo tablespace
+
+show parameter undo; 
+------------------------------------------------------------------
+--calculate the size of tablespace
+
+      select sum(t.BYTES/1024*1024) bytesinmegabyte ,
+             t.FILE_NAME 
+              from sys.dba_data_files t
+             where t.TABLESPACE_NAME='UNDOTBS1' 
+             group by t.TABLESPACE_NAME,t.FILE_NAME;
+------------------------------------------------------------------
+--creating tablespace
+
+CREATE UNDO TABLESPACE undotbs_02
+          DATAFILE 'C:\APP\SANTANU\ORADATA\ORCL\UNDOTBS02.DBF' 
+          SIZE 2M REUSE 
+          AUTOEXTEND ON;
+------------------------------------------------------------------
+--pointing to new tablespace
+
+alter system set undo_tablespace= undotbs_02 scope=spfile;
+------------------------------------------------------------------
+--checking its reflecting or not
+
+show parameter undo;
+------------------------------------------------------------------
+--dropping the existing one
+
+drop tablespace UNDOTBS1 including datafiles and content;

@@ -1,0 +1,56 @@
+Procedure
+-----------------------------------------------------------------
+CREATE OR REPLACE PROCEDURE SP_procedure_format
+         (i_input IN VARCHAR2, --Input Parameter
+         i_input1 IN VARCHAR2) -- InPut Parameter
+IS
+   V_variable varchar2(64); -- Variable declartion
+   err_num varchar2(100); -- Variable declartion
+   err_msg varchar2(200); -- Variable declartion
+   v_sysdate DATE; -- Variable declartion
+BEGIN
+select sysdate into v_sysdate from dual; -- Working section
+
+EXCEPTION --Exception Handling
+   WHEN OTHERS THEN
+ err_num := SQLCODE;
+ err_msg := SUBSTR(SQLERRM, 1, 100); -- Exception Handling
+END SP_procedure_format;
+-----------------------------------------------------------------
+Functions
+-----------------------------------------------------------------
+CREATE OR REPLACE FUNCTION f_function
+         (inum NUMBER, --Input Parameter
+         idate DATE) --Input Parameter
+   RETURN DATE AS
+    v_lastupdate DATE;-- Variable declartion
+    BEGIN
+    SELECT SYSDATE INTO v_lastupdate FROM dual; -- Working section
+    RETURN v_lastupdate;-- Returning Value
+END f_function;
+-----------------------------------------------------------------
+Packaged Cursor
+-----------------------------------------------------------------
+CREATE OR REPLACE PACKAGE MYPACKAGE
+     AS TYPE MYTYPE IS Ref cursor;
+END MYPACKAGE
+-----------------------------------------------------------------
+Global Temporary Tablespace
+-----------------------------------------------------------------
+CREATE TEMPORARY TABLESPACE tbs_global_tabspace
+    TEMPFILE 'tbs_tab.f'
+    SIZE 50m
+    REUSE AUTOEXTEND ON
+    MAXSIZE UNLIMITED
+    EXTENT MANAGEMENT LOCAL UNIFORM SIZE 64K;
+-----------------------------------------------------------------
+Global Temporary Table
+-----------------------------------------------------------------
+CREATE GLOBAL TEMPORARY TABLE t_global_temptable
+   (startdate DATE,
+   enddate DATE,
+   class1 CHAR(20))
+   ON COMMIT PRESERVE ROWS
+   TABLESPACE tbs_global_tabspace;
+on commit preserve:- it will store data after a commit issues by user untill a session
+on commit data :- it will delete the data after commit.
